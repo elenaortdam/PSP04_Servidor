@@ -1,0 +1,2 @@
+Cliente: 1 iniciado, (2021-02-24T18:55:56.894)
+Cliente: 2 iniciado, (2021-02-24T18:57:52.531)
