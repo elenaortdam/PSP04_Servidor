@@ -1,12 +1,9 @@
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.net.URL;
 
 public class ServidorTCP {
 
@@ -49,20 +46,32 @@ public class ServidorTCP {
 		servidor = new ServerSocket(6000);
 		System.out.println("Servidor iniciado...");
 
-		int count = 1;
-		FileWriter myWriter = new FileWriter("FichLog.txt");
-		for (int i = 0; i < 3; i++) {
+		int id = 1;
+		String directory = System.getProperty("user.home");
+		String fileName = "FichLog.txt";
+		URL resource = this.getClass().getClassLoader().getResource("FichLog.txt");
+
+		Profesor[] profesores = getProfesores();
+		FileWriter logFile = null;
+		File file = new File("./" + fileName);
+		if (file.exists()) {
+			logFile = new FileWriter(file);
+		} else {
+			logFile = new FileWriter(fileName);
+		}
+
+		while (true) {
 			Socket cliente = new Socket();
 			cliente = servidor.accept();//esperando cliente
 
-			HiloServidor hilo = new HiloServidor(cliente, myWriter, count, getProfesores());
+			HiloServidor hilo = new HiloServidor(cliente, logFile, id, profesores);
 			hilo.start();
-			count++;
+			id++;
 		}
-		myWriter.close();
+
 	}
 
-	public static void main(String args[]) throws IOException {
+	public static void main(String[] args) throws IOException {
 		ServidorTCP servidorTCP = new ServidorTCP();
 		servidorTCP.crearServidor();
 	}

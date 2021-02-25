@@ -1,4 +1,3 @@
-import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
@@ -19,6 +18,7 @@ public class ObjetoCompartido {
 	public synchronized void escribirLínea(FileWriter log, String newLine) throws IOException {
 		if (log != null) {
 			log.write(newLine);
+			log.flush();
 		}
 
 	}
