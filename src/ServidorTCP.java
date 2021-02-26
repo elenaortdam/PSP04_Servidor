@@ -3,7 +3,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.URL;
 
 public class ServidorTCP {
 
@@ -41,37 +40,41 @@ public class ServidorTCP {
 
 	}
 
-	private void crearServidor() throws IOException {
+	private void crearServidor() throws IOException, InterruptedException {
 		ServerSocket servidor;
 		servidor = new ServerSocket(6000);
 		System.out.println("Servidor iniciado...");
 
 		int id = 1;
-		String directory = System.getProperty("user.home");
 		String fileName = "FichLog.txt";
-		URL resource = this.getClass().getClassLoader().getResource("FichLog.txt");
 
 		Profesor[] profesores = getProfesores();
 		FileWriter logFile = null;
 		File file = new File("./" + fileName);
 		if (file.exists()) {
-			logFile = new FileWriter(file);
+			logFile = new FileWriter(file, true);
 		} else {
 			logFile = new FileWriter(fileName);
 		}
 
 		while (true) {
-			Socket cliente = new Socket();
-			cliente = servidor.accept();//esperando cliente
+			try {
+				Socket cliente = new Socket();
+				cliente = servidor.accept();//esperando cliente
 
-			HiloServidor hilo = new HiloServidor(cliente, logFile, id, profesores);
-			hilo.start();
-			id++;
+				HiloServidor hilo = new HiloServidor(cliente, logFile, id, profesores);
+				id++;
+				hilo.start();
+			} catch (Exception e) {
+				System.out.println(e.getLocalizedMessage());
+				System.out.println("Durmiendo hilo. Reintentar la conexión en 10 segundos...");
+				Thread.sleep(10000);
+			}
 		}
 
 	}
 
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws IOException, InterruptedException {
 		ServidorTCP servidorTCP = new ServidorTCP();
 		servidorTCP.crearServidor();
 	}
